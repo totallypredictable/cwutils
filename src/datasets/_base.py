@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import pandas as pd
 from importlib import resources
 
 DATA_MODULE = "cwutils.datasets.data"
@@ -7,11 +8,15 @@ DESCR_MODULE = "cwutils.datasets.descr"
 
 def load_csv_data(
     data_file_name,
+    /,
+    target,
     *,
     data_module=DATA_MODULE,
     descr_file_name=None,
     descr_module=DESCR_MODULE,
+    separate_target = False,
     encoding="utf-8",
+    **kwargs,
 ):
     """Loads `data_file_name` from `data_module with `importlib.resources`.
 
@@ -50,24 +55,31 @@ def load_csv_data(
 
     data_path = resources.files(data_module) / data_file_name
     with data_path.open("r", encoding="utf-8") as csv_file:
-        data_file = csv.reader(csv_file)
-        temp = next(data_file)
-        n_samples = int(temp[0])
-        n_features = int(temp[1])
-        target_names = np.array(temp[2:])
-        data = np.empty((n_samples, n_features))
-        target = np.empty((n_samples,), dtype=int)
+        first_row = csv_file.readline()
+        dialect = csv.Sniffer().sniff(first_row)
 
-        for i, ir in enumerate(data_file):
-            data[i] = np.asarray(ir[:-1], dtype=np.float64)
-            target[i] = np.asarray(ir[-1], dtype=int)
+    
+    dialect = None if dialect.delimiter == "," else dialect
 
-    if descr_file_name is None:
-        return data, target, target_names
+    df = pd.read_csv(data_path, encoding=encoding, dialect=dialect, **kwargs)
+    if separate_target:
+        try:
+            target_series = pd.Series(df.loc[:, target])
+            if descr_file_name is None:
+                return df.drop(target, axis=1), target_series
+            else:
+                assert descr_module is not None:
+                descr = load_descr(descr_module=descr_module, descr_file_name=descr_file_name)
+                return df.drop(target, axis=1), target_series, descr
+        except KeyError:
+            raise KeyError(f"Specified target name `{target}` is not in the columnd of the dataset.")
     else:
-        assert descr_module is not None
-        descr = load_descr(descr_module=descr_module, descr_file_name=descr_file_name)
-        return data, target, target_names, descr
+        if descr_file_name is None:
+            return df
+        else:
+            assert separate_target is not None
+            descr = load_descr(descr_module=descr_module, descr_file_name=descr_file_name)
+            return df, descr
 
 def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
     """Load `descr_file_name` from `descr_module` with `importlib.resources`.
@@ -95,3 +107,9 @@ def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
     """
     path = resources.files(descr_module) / descr_file_name
     return path.read_text(encoding=encoding)
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
