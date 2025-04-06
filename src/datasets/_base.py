@@ -2,45 +2,17 @@ import csv
 import numpy as np
 from importlib import resources
 
-DATA_MODULE: str = "cwutils.datasets.data"
-DESCR_MODULE: str = "cwutils.datasets.descr"
-
-def load_descr(descr_file_name: str | None, *, descr_module=DESCR_MODULE, encoding: str = "utf-8") -> str:
-    """Load `descr_file_name` from `descr_module` with `importlib.resources`.
-
-    Parameters
-    ----------
-    descr_file_name : str, default=None
-        Name of rst file to be loaded from `descr_module/descr_file_name`.
-        For example `'advertising.rst'`. See also :func:`load_descr`.
-        If not None, also returns the corresponding description of
-        the dataset.
-
-    descr_module : str or module, default='cwutils.datasets.descr'
-        Module where `descr_file_name` lives. See also :func:`load_descr`.
-        The default  is `'cwutils.datasets.descr'`.
-
-    encoding : str, default="utf-8"
-        Name of the encoding that `descr_file_name` will be decoded with.
-        The default is 'utf-8'.
-
-    Returns
-    -------
-    fdescr : str
-        Content of `descr_file_name`.
-    """
-    path = resources.files(descr_module) / descr_file_name
-    return path.read_text(encoding=encoding)
-
+DATA_MODULE = "cwutils.datasets.data"
+DESCR_MODULE = "cwutils.datasets.descr"
 
 def load_csv_data(
-    data_file_name: str,
+    data_file_name,
     *,
-    data_module: str=DATA_MODULE,
-    descr_file_name: str | None = None,
-    descr_module: str = DESCR_MODULE,
-    encoding: str = "utf-8",
-) -> np.typing.NDArray:
+    data_module=DATA_MODULE,
+    descr_file_name=None,
+    descr_module=DESCR_MODULE,
+    encoding="utf-8",
+):
     """Loads `data_file_name` from `data_module with `importlib.resources`.
 
     Parameters
@@ -96,3 +68,30 @@ def load_csv_data(
         assert descr_module is not None
         descr = load_descr(descr_module=descr_module, descr_file_name=descr_file_name)
         return data, target, target_names, descr
+
+def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
+    """Load `descr_file_name` from `descr_module` with `importlib.resources`.
+
+    Parameters
+    ----------
+    descr_file_name : str, default=None
+        Name of rst file to be loaded from `descr_module/descr_file_name`.
+        For example `'advertising.rst'`. See also :func:`load_descr`.
+        If not None, also returns the corresponding description of
+        the dataset.
+
+    descr_module : str or module, default='cwutils.datasets.descr'
+        Module where `descr_file_name` lives. See also :func:`load_descr`.
+        The default  is `'cwutils.datasets.descr'`.
+
+    encoding : str, default="utf-8"
+        Name of the encoding that `descr_file_name` will be decoded with.
+        The default is 'utf-8'.
+
+    Returns
+    -------
+    fdescr : str
+        Content of `descr_file_name`.
+    """
+    path = resources.files(descr_module) / descr_file_name
+    return path.read_text(encoding=encoding)
