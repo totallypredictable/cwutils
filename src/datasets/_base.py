@@ -2,10 +2,10 @@ import csv
 import numpy as np
 from importlib import resources
 
-DATA_MODULE = "cwutils.datasets.data"
-DESCR_MODULE = "cwutils.datasets.descr"
+DATA_MODULE: str = "cwutils.datasets.data"
+DESCR_MODULE: str = "cwutils.datasets.descr"
 
-def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
+def load_descr(descr_file_name: str | None, *, descr_module=DESCR_MODULE, encoding: str = "utf-8") -> str:
     """Load `descr_file_name` from `descr_module` with `importlib.resources`.
 
     Parameters
@@ -34,13 +34,13 @@ def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
 
 
 def load_csv_data(
-    data_file_name,
+    data_file_name: str,
     *,
-    data_module=DATA_MODULE,
-    descr_file_name=None,
-    descr_module=DESCR_MODULE,
-    encoding="utf-8",
-):
+    data_module: str=DATA_MODULE,
+    descr_file_name: str | None = None,
+    descr_module: str = DESCR_MODULE,
+    encoding: str = "utf-8",
+) -> np.typing.NDArray:
     """Loads `data_file_name` from `data_module with `importlib.resources`.
 
     Parameters
