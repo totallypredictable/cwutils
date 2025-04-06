@@ -1,5 +1,4 @@
 import csv
-import numpy as np
 import pandas as pd
 from importlib import resources
 
@@ -25,6 +24,9 @@ def load_csv_data(
     data_file_name : str
         Name of csv file to be loaded from `data_module/data_file_name`.
         For example `advertising.csv`.
+    
+    target : str or int
+        Name or the index of the target column.
 
     data_module : str or module, default='cwutils.datasets.data'
         Module where data lives. The default is `'cwutils.datasets.data'`.
@@ -34,23 +36,28 @@ def load_csv_data(
         For example `'advertising.rst'`. See also :func:`load_descr`.
         If not None, also returns the corresponding description of 
         the dataset.
-
-    Returns
-    -------
-    data: ndarray of shape (n_sampoles, n_features)
-        A 2D array with each row representing one sample and each column 
-        representing the features of a given sample.
-
-    target: ndarray of shape (n_samples,)
-        A 1D array holding target variables for all the samples in `data`.
-        For example, target[0] is the name of the target[0] class.
-
-    descr: str, optional
-        Description of the dataset (the content of `descr_file_name`).
-        Only returned if `descr_file_name` is not None.
+    
+    separate_target : bool, default=False
+        If true, split the dataset into design matrix of shape (n_samples, n_features) 
+        and target column of shape (n_samples,) and return them separately. 
+        Return the entire dataset otherwise.
 
     encoding: str, optional
         Test encoding of the CSV file.
+
+    Returns
+    -------
+    design matrix : :class:`pd.DataFrame` of shape (n_samples, n_features)
+        A 2D data frame with each row representing one sample and each column 
+        representing the features of a given sample.
+
+    target : :class:`pd.Series` of shape (n_samples,)
+        A 1D series holding target variables for all the samples in `data`.
+        For example, target[0] is the name of the target[0] class.
+
+    descr : str, optional
+        Description of the dataset (the content of `descr_file_name`).
+        Only returned if `descr_file_name` is not None.
     """
 
     data_path = resources.files(data_module) / data_file_name
@@ -68,7 +75,7 @@ def load_csv_data(
             if descr_file_name is None:
                 return df.drop(target, axis=1), target_series
             else:
-                assert descr_module is not None:
+                assert descr_module is not None
                 descr = load_descr(descr_module=descr_module, descr_file_name=descr_file_name)
                 return df.drop(target, axis=1), target_series, descr
         except KeyError:
