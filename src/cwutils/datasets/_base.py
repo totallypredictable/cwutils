@@ -18,7 +18,14 @@ def _return_resource(
 
     try:
         data_path = resources.files(data_module) / data_file_name
-        return data_path
+        if not data_path.exists():
+            raise FileNotFoundError(
+                f"The file {data_file_name} at the given path does not exist!"
+            )
+        elif not data_path.is_file():
+            raise ValueError("The given path does not point to a file!")
+        else:
+            return data_path
     except ModuleNotFoundError:
         raise ModuleNotFoundError(f"The module {data_module} not found!")
 
