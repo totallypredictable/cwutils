@@ -1,23 +1,62 @@
 import csv
 import pandas as pd
 from importlib import resources
+import types
+import pathlib
+import os
 
 DATA_MODULE = "cwutils.datasets.data"
 DESCR_MODULE = "cwutils.datasets.descr"
 
 
-def load_csv_data(
-    data_file_name,
-    /,
-    target,
+def _return_resource(
+    data_module: str | types.ModuleType, data_file_name: str
+) -> os.PathLike:
+    """Checks if the resource at the given path exists and returns the `data_path`.
+    Otherwise returns `None`.
+    """
+
+    try:
+        data_path = resources.files(data_module) / data_file_name
+        return data_path
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError(f"The module {data_module} not found!")
+
+
+def _infer_dialect(data_path: pathlib.PosixPath) -> csv.Dialect:
+    """Infers and returns the dialect of the input text."""
+
+    with data_path.open("r", encoding="utf-8") as csv_file:
+        first_row = csv_file.readline()
+        dialect = csv.Sniffer().sniff(first_row)
+
+    return dialect
+
+
+def _convert_to_dataframe(
+    data_path: str | os.PathLike,
     *,
-    data_module=DATA_MODULE,
-    descr_file_name=None,
-    descr_module=DESCR_MODULE,
-    separate_target=False,
-    encoding="utf-8",
+    dialect: None | csv.Dialect | dict = None,
+    encoding: str = "utf-8",
     **kwargs,
-):
+) -> pd.DataFrame:
+    """Reads the csv at the given path and converts it to and returns it as a dataframe"""
+
+    return pd.read_csv(data_path, encoding=encoding, dialect=dialect, **kwargs)
+
+
+def load_csv_data(
+    data_file_name: str,
+    /,
+    target: str | int,
+    *,
+    data_module: str | types.ModuleType = DATA_MODULE,
+    descr_file_name: str | None = None,
+    descr_module: str | types.ModuleType = DESCR_MODULE,
+    separate_target: bool = False,
+    encoding: str = "utf-8",
+    **kwargs,
+) -> tuple[...]:
     """Loads `data_file_name` from `data_module with `importlib.resources`.
 
     Parameters
@@ -61,14 +100,12 @@ def load_csv_data(
         Only returned if `descr_file_name` is not None.
     """
 
-    data_path = resources.files(data_module) / data_file_name
-    with data_path.open("r", encoding="utf-8") as csv_file:
-        first_row = csv_file.readline()
-        dialect = csv.Sniffer().sniff(first_row)
-
+    data_path = _return_resource(data_module, data_file_name)
+    dialect = _infer_dialect(data_path)
     dialect = None if dialect.delimiter == "," else dialect
 
-    df = pd.read_csv(data_path, encoding=encoding, dialect=dialect, **kwargs)
+    df = _convert_to_dataframe(data_path, dialect=dialect, encoding=encoding, **kwargs)
+
     if separate_target:
         try:
             target_series = pd.Series(df.loc[:, target])
@@ -82,7 +119,7 @@ def load_csv_data(
                 return df.drop(target, axis=1), target_series, descr
         except KeyError:
             raise KeyError(
-                f"Specified target name `{target}` is not in the columnd of the dataset."
+                f"Specified target name `{target}` is not in the columns of the dataset."
             )
     else:
         if descr_file_name is None:
@@ -124,7 +161,10 @@ def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
 
 
 def main():
-    pass
+    df, target = load_csv_data(
+        "advertising.csv", target="Clicked on Ad", separate_target=True
+    )
+    print(df, target, sep="\n")
 
 
 if __name__ == "__main__":
