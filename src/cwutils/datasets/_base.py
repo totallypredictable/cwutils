@@ -16,8 +16,13 @@ def _return_resource(
     Otherwise returns `None`.
     """
 
-    assert isinstance(data_module, (str, types.ModuleType)), f"data_module={data_module} is of incorrect type!"
-    assert isinstance(data_file_name, str), f"data_file_name={data_file_name} is of incorrect type!"
+    assert isinstance(
+        data_module, (str, types.ModuleType)
+    ), f"data_module={data_module} is of incorrect type!"
+    assert isinstance(
+        data_file_name, str
+    ), f"data_file_name={data_file_name} is of incorrect type!"
+
     try:
         data_path = resources.files(data_module) / data_file_name
         if not data_path.exists():
@@ -37,8 +42,10 @@ def _return_resource(
 def _infer_dialect(data_path: pathlib.PosixPath) -> csv.Dialect:
     """Infers and returns the dialect of the input text."""
 
-    assert isinstance(data_path, (str, pathlib.PosixPath, os.PathLike)), "data_path is not one of `str`, `pathlib.PosixPath`, `os.PathLike`"
-    assert isinstance(data_path, (str, pathlib.PosixPath, os.PathLike)), "data_path is not one of correct type!"
+    assert isinstance(
+        data_path, (str, pathlib.PosixPath, os.PathLike)
+    ), "data_path is not one of correct type!"
+
     with data_path.open("r", encoding="utf-8") as csv_file:
         first_row = csv_file.readline()
         dialect = csv.Sniffer().sniff(first_row)
