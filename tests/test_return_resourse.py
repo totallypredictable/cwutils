@@ -50,6 +50,6 @@ def test_nonexistent_file_input(default_data_module, nonexistent_file_name) -> N
         _return_resource(default_data_module, nonexistent_file_name)
 
 
-def test_wrong_file_type() -> None:
-    # TODO
-    pass
+def test_wrong_is_file(default_data_module, tmpdir) -> None:
+    with pytest.raises(ValueError):
+        _return_resource(default_data_module, tmpdir)
