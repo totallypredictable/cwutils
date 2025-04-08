@@ -36,7 +36,9 @@ def _return_resource(
         else:
             return data_path
     except ModuleNotFoundError:
-        raise ModuleNotFoundError(f"The module {data_module} not found!")
+        raise ModuleNotFoundError(
+            f"The module {data_module} not found! Make sure it's installed in your ENV."
+        )
 
 
 def _infer_dialect(data_path: pathlib.PosixPath) -> csv.Dialect:
@@ -45,6 +47,9 @@ def _infer_dialect(data_path: pathlib.PosixPath) -> csv.Dialect:
     assert isinstance(
         data_path, (str, pathlib.PosixPath, os.PathLike)
     ), "data_path is not one of correct type!"
+
+    if not isinstance(data_path, pathlib.PosixPath):
+        data_path = pathlib.PosixPath(data_path)
 
     with data_path.open("r", encoding="utf-8") as csv_file:
         first_row = csv_file.readline()
