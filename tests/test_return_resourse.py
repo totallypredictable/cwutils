@@ -51,5 +51,5 @@ def test_nonexistent_file_input(default_data_module, nonexistent_file_name) -> N
 
 
 def test_wrong_is_file(default_data_module, tmpdir) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         _return_resource(default_data_module, tmpdir)
