@@ -41,7 +41,7 @@ def _return_resource(
         )
 
 
-def _infer_dialect(data_path: pathlib.PosixPath) -> csv.Dialect:
+def _infer_dialect(data_path: str | pathlib.PosixPath | os.PathLike) -> csv.Dialect:
     """Infers and returns the dialect of the input text."""
 
     assert isinstance(
