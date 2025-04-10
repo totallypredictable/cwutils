@@ -135,22 +135,20 @@ def load_csv_data(
             assert (
                 target in df.columns
             ), f"{target} is not in the columns of the dataset!"
+        elif isinstance(target, int):
+            assert target in list(range(len(df.columns)))
+            target = df.columns[target]
 
     if separate_target:
-        try:
-            target_series = pd.Series(df.loc[:, target])
-            if descr_file_name is None:
-                return df.drop(target, axis=1), target_series
-            else:
-                assert descr_module is not None
-                descr = load_descr(
-                    descr_module=descr_module, descr_file_name=descr_file_name
-                )
-                return df.drop(target, axis=1), target_series, descr
-        except KeyError:
-            raise KeyError(
-                f"Specified target name `{target}` is not in the columns of the dataset."
+        target_series = pd.Series(df[target])
+        if descr_file_name is None:
+            return df.drop(target, axis=1), target_series
+        else:
+            assert descr_module is not None
+            descr = load_descr(
+                descr_module=descr_module, descr_file_name=descr_file_name
             )
+            return df.drop(target, axis=1), target_series, descr
     else:
         if descr_file_name is None:
             return df
@@ -188,14 +186,3 @@ def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
     """
     path = resources.files(descr_module) / descr_file_name
     return path.read_text(encoding=encoding)
-
-
-def main():
-    df, target = load_csv_data(
-        "advertising.csv", target="Clicked on Ad", separate_target=True
-    )
-    print(df, target, sep="\n")
-
-
-if __name__ == "__main__":
-    main()
