@@ -73,7 +73,7 @@ def _convert_to_dataframe(
 def load_csv_data(
     data_file_name: str,
     /,
-    target: str | int,
+    target: str | int | None = None,
     *,
     data_module: str | types.ModuleType = DATA_MODULE,
     descr_file_name: str | None = None,
@@ -90,24 +90,24 @@ def load_csv_data(
         Name of csv file to be loaded from `data_module/data_file_name`.
         For example `advertising.csv`.
 
-    target : str or int
+    target : str or int, optional, default=None
         Name or the index of the target column.
 
     data_module : str or module, default='cwutils.datasets.data'
         Module where data lives. The default is `'cwutils.datasets.data'`.
 
-    descr_file_name : str, default=None
+    descr_file_name : str, optional, default=None
         Name of rst file to be loaded from `descr_module/descr_file_name`.
         For example `'advertising.rst'`. See also :func:`load_descr`.
         If not None, also returns the corresponding description of
         the dataset.
 
-    separate_target : bool, default=False
+    separate_target : bool, optional, default=False
         If true, split the dataset into design matrix of shape (n_samples, n_features)
         and target column of shape (n_samples,) and return them separately.
         Return the entire dataset otherwise.
 
-    encoding: str, optional
+    encoding: str, optional, default=`utf-8`
         Test encoding of the CSV file.
 
     Returns
@@ -130,6 +130,12 @@ def load_csv_data(
     dialect = None if dialect.delimiter == "," else dialect
 
     df = _convert_to_dataframe(data_path, dialect=dialect, encoding=encoding, **kwargs)
+
+    if target:
+        if isinstance(target, str):
+            assert (
+                target in df.columns
+            ), f"{target} is not in the columns of the dataset!"
 
     if separate_target:
         try:
