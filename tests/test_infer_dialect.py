@@ -20,3 +20,8 @@ def test_delimiter(data_path) -> None:
 def test_return_type(data_path) -> None:
     dialect = _infer_dialect(data_path)
     assert issubclass(dialect, csv.Dialect)
+
+
+def test_datapath_as_str(data_path) -> None:
+    data_path_str = str(data_path)
+    _infer_dialect(data_path_str)
