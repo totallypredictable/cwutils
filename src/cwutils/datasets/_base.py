@@ -90,24 +90,24 @@ def load_csv_data(
         Name of csv file to be loaded from `data_module/data_file_name`.
         For example `advertising.csv`.
 
-    target : str or int
+    target : str or int, optional, default=None
         Name or the index of the target column.
 
     data_module : str or module, default='cwutils.datasets.data'
         Module where data lives. The default is `'cwutils.datasets.data'`.
 
-    descr_file_name : str, default=None
+    descr_file_name : str, optional, default=None
         Name of rst file to be loaded from `descr_module/descr_file_name`.
         For example `'advertising.rst'`. See also :func:`load_descr`.
         If not None, also returns the corresponding description of
         the dataset.
 
-    separate_target : bool, default=False
+    separate_target : bool, optional, default=False
         If true, split the dataset into design matrix of shape (n_samples, n_features)
         and target column of shape (n_samples,) and return them separately.
         Return the entire dataset otherwise.
 
-    encoding: str, optional
+    encoding: str, optional, default=`utf-8`
         Test encoding of the CSV file.
 
     Returns
