@@ -140,7 +140,7 @@ def load_csv_data(
             target = df.columns[target]
 
     if separate_target:
-        target_series = pd.Series(df[target])
+        target_series = pd.Series(df.loc[:, target])
         if descr_file_name is None:
             return df.drop(target, axis=1), target_series
         else:
