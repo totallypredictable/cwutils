@@ -131,6 +131,12 @@ def load_csv_data(
 
     df = _convert_to_dataframe(data_path, dialect=dialect, encoding=encoding, **kwargs)
 
+    if target:
+        if isinstance(target, str):
+            assert (
+                target in df.columns
+            ), f"{target} is not in the columns of the dataset!"
+
     if separate_target:
         try:
             target_series = pd.Series(df.loc[:, target])
