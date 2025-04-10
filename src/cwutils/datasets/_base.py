@@ -73,7 +73,7 @@ def _convert_to_dataframe(
 def load_csv_data(
     data_file_name: str,
     /,
-    target: str | int,
+    target: str | int | None = None,
     *,
     data_module: str | types.ModuleType = DATA_MODULE,
     descr_file_name: str | None = None,
