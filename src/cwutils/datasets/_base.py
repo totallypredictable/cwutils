@@ -88,8 +88,9 @@ def load_csv_data(
         Name of csv file to be loaded from `data_module/data_file_name`.
         For example `advertising.csv`.
 
-    target : str or int, optional, default=None
+    target : str or int, optional, default=None.
         Name or the index of the target column.
+        If int, must be between [0, len(df.columns)-1].
 
     data_module : str or module, default='cwutils.datasets.data'
         Module where data lives. The default is `'cwutils.datasets.data'`.
