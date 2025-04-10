@@ -30,3 +30,22 @@ def test_correct_target(
         separate_target=True,
     )
     pd.testing.assert_series_equal(advertising_target_as_series, target_series)
+
+
+def test_descr() -> None:
+    load_csv_data("iris.csv", descr_file_name="iris.rst")
+
+
+def test_descr_name_none() -> None:
+    load_csv_data(
+        "iris.csv", descr_file_name="iris.rst", target="species", separate_target=True
+    )
+
+
+def test_incorrect_target_name() -> None:
+    with pytest.raises(AssertionError):
+        load_csv_data("iris.csv", target="dontexist", separate_target=True)
+
+
+def test_correct_target_idx() -> None:
+    load_csv_data("iris.csv", target=4, separate_target=True)
