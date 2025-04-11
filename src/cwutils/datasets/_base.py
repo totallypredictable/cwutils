@@ -38,11 +38,11 @@ def _return_resource(
 
 
 def _infer_dialect(data_path: str | pathlib.PosixPath | os.PathLike) -> csv.Dialect:
-    """Infers and returns the dialect of the input text."""
+    """Infer and return the dialect of the input text."""
 
     assert isinstance(
         data_path, (str, pathlib.PosixPath, os.PathLike)
-    ), "data_path is not one of correct type!"
+    ), f"{data_path=} is not one of correct type!"
 
     if not isinstance(data_path, pathlib.PosixPath):
         data_path = pathlib.PosixPath(data_path)
@@ -61,7 +61,7 @@ def _convert_to_dataframe(
     encoding: str = "utf-8",
     **kwargs,
 ) -> pd.DataFrame:
-    """Reads the csv at the given path and converts it to and returns it as a dataframe"""
+    """Read the csv at the given path and convert it to and return it as a dataframe"""
 
     return pd.read_csv(data_path, encoding=encoding, dialect=dialect, **kwargs)
 
@@ -78,7 +78,7 @@ def load_csv_data(
     encoding: str = "utf-8",
     **kwargs,
 ) -> tuple[...]:
-    """Loads `data_file_name` from `data_module with `importlib.resources`.
+    """Load `data_file_name` from `data_module with `importlib.resources`.
 
     Parameters
     ----------
@@ -86,26 +86,29 @@ def load_csv_data(
         Name of csv file to be loaded from `data_module/data_file_name`.
         For example `advertising.csv`.
 
-    target : str or int, optional, default=None.
+    target : str or int, default=None.
         Name or the index of the target column.
         If int, must be between [0, len(df.columns)-1].
 
     data_module : str or module, default='cwutils.datasets.data'
-        Module where data lives. The default is `'cwutils.datasets.data'`.
+        Module where data lives. The default is :mod:`cwutils.datasets.data`.
 
-    descr_file_name : str, optional, default=None
+    descr_file_name : str, default=None
         Name of rst file to be loaded from `descr_module/descr_file_name`.
         For example `'advertising.rst'`. See also :func:`load_descr`.
         If not None, also returns the corresponding description of
         the dataset.
 
-    separate_target : bool, optional, default=False
+    separate_target : bool, default=False
         If true, split the dataset into design matrix of shape (n_samples, n_features)
         and target column of shape (n_samples,) and return them separately.
         Return the entire dataset otherwise.
 
-    encoding: str, optional, default=`utf-8`
+    encoding: str, default='utf-8'
         Test encoding of the CSV file.
+
+    **kwargs :
+        Additional keyword arguments will be passed to :func:`pd.read_csv`
 
     Returns
     -------
@@ -117,9 +120,9 @@ def load_csv_data(
         A 1D series holding target variables for all the samples in `data`.
         For example, target[0] is the name of the target[0] class.
 
-    descr : str, optional
+    descr : str
+        Returned only if `descr_file_name` is not None.
         Description of the dataset (the content of `descr_file_name`).
-        Only returned if `descr_file_name` is not None.
     """
 
     data_path = _return_resource(data_module, data_file_name)
@@ -163,17 +166,15 @@ def load_descr(descr_file_name, *, descr_module=DESCR_MODULE, encoding="utf-8"):
 
     Parameters
     ----------
-    descr_file_name : str, default=None
+    descr_file_name : str
         Name of rst file to be loaded from `descr_module/descr_file_name`.
-        For example `'advertising.rst'`. See also :func:`load_descr`.
-        If not None, also returns the corresponding description of
-        the dataset.
+        For example `'advertising.rst'`.
 
     descr_module : str or module, default='cwutils.datasets.descr'
         Module where `descr_file_name` lives. See also :func:`load_descr`.
-        The default  is `'cwutils.datasets.descr'`.
+        The default  is :mod:`cwutils.datasets.descr`.
 
-    encoding : str, default="utf-8"
+    encoding : str, default='utf-8'
         Name of the encoding that `descr_file_name` will be decoded with.
         The default is 'utf-8'.
 
