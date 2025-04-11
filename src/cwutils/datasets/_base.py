@@ -28,7 +28,7 @@ def _return_resource(
                 f"{data_file_name=} at the given path does not exist!"
             )
         elif os.path.isdir(data_path):
-            raise IsADirectoryError("The file name you provided points to a directory!")
+            raise IsADirectoryError(f"{data_file_name} points to a directory!")
         else:
             return data_path
     except ModuleNotFoundError:
