@@ -12,22 +12,20 @@ DESCR_MODULE = "cwutils.datasets.descr"
 def _return_resource(
     data_module: str | types.ModuleType, data_file_name: str
 ) -> os.PathLike:
-    """Checks if the resource at the given path exists and returns the `data_path`.
-    Otherwise returns `None`.
+    """Check if the resource at the given path exists and return the `data_path`.
+    Otherwise return `None`.
     """
 
     assert isinstance(
         data_module, (str, types.ModuleType)
-    ), f"data_module={data_module} is of incorrect type!"
-    assert isinstance(
-        data_file_name, str
-    ), f"data_file_name={data_file_name} is of incorrect type!"
+    ), f"{data_module=} is of incorrect type!"
+    assert isinstance(data_file_name, str), f"{data_file_name=} is of incorrect type!"
 
     try:
         data_path = resources.files(data_module) / data_file_name
         if not data_path.exists():
             raise FileNotFoundError(
-                f"The file {data_file_name} at the given path does not exist!"
+                f"{data_file_name=} at the given path does not exist!"
             )
         elif os.path.isdir(data_path):
             raise IsADirectoryError("The file name you provided points to a directory!")
@@ -35,7 +33,7 @@ def _return_resource(
             return data_path
     except ModuleNotFoundError:
         raise ModuleNotFoundError(
-            f"The module {data_module} not found! Make sure it's installed in your ENV."
+            f"{data_module=} not found! Make sure it's installed in your ENV."
         )
 
 
@@ -134,7 +132,7 @@ def load_csv_data(
         if isinstance(target, str):
             assert (
                 target in df.columns
-            ), f"{target} is not in the columns of the dataset!"
+            ), f"{target=} is not in the columns of the dataset!"
         elif isinstance(target, int):
             assert target in list(range(len(df.columns)))
             target = df.columns[target]
