@@ -31,10 +31,9 @@ def _return_resource(
             raise IsADirectoryError(f"{data_file_name} points to a directory!")
         else:
             return data_path
-    except ModuleNotFoundError:
-        raise ModuleNotFoundError(
-            f"{data_module=} not found! Make sure it's installed in your ENV."
-        )
+    except ModuleNotFoundError as e:
+        e.add_note(f"{data_module=} not found! Make sure it's installed in your ENV.")
+        raise
 
 
 def _infer_dialect(data_path: str | pathlib.PosixPath | os.PathLike) -> csv.Dialect:
