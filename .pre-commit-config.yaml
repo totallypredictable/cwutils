@@ -4,18 +4,18 @@ exclude: '\.csv$'
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.6.14
+    rev: 0.11.26
     hooks:
       - id: uv-lock
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # ruff version
-    rev: v0.11.6
+    rev: v0.15.20
     hooks:
       # Run the linter.
       - id: ruff
         args: [ --fix ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -23,7 +23,7 @@ repos:
       - id: check-added-large-files
   # Using this mirror lets us use mypyc-compiled black, which is about 2x faster
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.1.0
+    rev: 26.5.1
     hooks:
       - id: black
         # It is recommended to specify the latest version of Python
